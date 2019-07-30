@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="tox-wikimedia",
-    version="0.0.1",
+    version="0.0.2",
     author="Kunal Mehta",
     author_email="legoktm@member.fsf.org",
     description="Automatically configure tox environments to use "
@@ -14,7 +14,7 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "Framework:: tox",
+        "Framework :: tox",
         "License :: OSI Approved :: GNU General Public License v3 "
         "or later (GPLv3+)",
         "Programming Language :: Python :: 2.7",
