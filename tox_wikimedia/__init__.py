@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 try:
     from configparser import ConfigParser
 except ImportError:
-    from ConfigParser import ConfigParser
+    from ConfigParser import ConfigParser  # type: ignore
 import pluggy
 import os
 from tox.config import DepConfig
