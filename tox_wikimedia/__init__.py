@@ -29,13 +29,19 @@ hookimpl = pluggy.HookimplMarker("tox")
 
 # Pre-configured tools
 TOOLS = {
-    "flake8": {"commands": ["flake8"], "deps": ["flake8"]},
+    "flake8": {
+        "description": "Style consistency checker",
+        "commands": ["flake8"],
+        "deps": ["flake8"],
+    },
     "mypy": {
+        "description": "Static type checker",
         "commands": ["mypy", "{mypy_package}"],
         "deps": ["mypy"],
         "requirements": True,
     },
     "pytest": {
+        "description": "Run tests",
         "commands": ["pytest"],
         "deps": ["pytest"],
         "requirements": True,
@@ -115,3 +121,5 @@ def tox_configure(config):
                         envname, str(cmd)
                     )
                 )
+            if not econfig.description:
+                econfig.description = fconfig["description"]
