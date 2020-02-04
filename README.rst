@@ -29,7 +29,8 @@ pytest_: "pytest: simple powerful testing with Python"
 
 Command executed: ``pytest``
 
-Dependencies installed: ``pytest``
+Dependencies installed: ``pytest``, ``requirements.txt`` (if exists),
+``test-requirements.txt`` (if exists)
 
 .. _flake8: https://pypi.org/project/flake8/
 .. _pytest: https://pytest.org/en/latest/

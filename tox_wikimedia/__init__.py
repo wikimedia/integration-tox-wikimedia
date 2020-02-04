@@ -30,7 +30,11 @@ hookimpl = pluggy.HookimplMarker("tox")
 # Pre-configured tools
 TOOLS = {
     "flake8": {"commands": ["flake8"], "deps": ["flake8"]},
-    "pytest": {"commands": ["pytest"], "deps": ["pytest"]},
+    "pytest": {
+        "commands": ["pytest"],
+        "deps": ["pytest"],
+        "requirements": True,
+    },
 }
 
 
@@ -46,7 +50,8 @@ def is_enabled(toxinidir):
 @hookimpl
 def tox_configure(config):
     # Only run if we're enabled
-    if not is_enabled(str(config.toxinidir)):
+    toxinidir = str(config.toxinidir)
+    if not is_enabled(toxinidir):
         verbosity2("[wikimedia] tox-wikimedia is not enabled, skipping")
         return
 
@@ -70,6 +75,18 @@ def tox_configure(config):
                     verbosity2(
                         "[wikimedia] {}: Adding dep on {}".format(envname, dep)
                     )
+            if fconfig.get("requirements"):
+                for txtdep in [
+                    "requirements.txt",
+                    "test-requirements.txt",
+                ]:
+                    if os.path.exists(os.path.join(toxinidir, txtdep)):
+                        verbosity2(
+                            "[wikimedia] {}: Adding dep on {}".format(
+                                envname, txtdep
+                            )
+                        )
+                        config.deps.append(DepConfig("-r{}".format(txtdep)))
             if not config.commands:
                 # If there's no command, then set one
                 config.commands.append(fconfig["commands"])
