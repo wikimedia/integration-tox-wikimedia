@@ -15,10 +15,21 @@ For example::
 
 The following tools are supported for now:
 
-* flake8_
-* pytest_
+flake8
+------
+flake8_: "the modular source code checker: pep8, pyflakes and co"
+
+Command executed: ``flake8``
+
+Dependencies installed: ``flake8``
+
+pytest
+------
+pytest_: "pytest: simple powerful testing with Python"
+
+Command executed: ``pytest``
+
+Dependencies installed: ``pytest``
 
 .. _flake8: https://pypi.org/project/flake8/
 .. _pytest: https://pytest.org/en/latest/
-
-More to come!
