@@ -21,7 +21,7 @@ except ImportError:
     from ConfigParser import ConfigParser  # type: ignore
 import pluggy
 import os
-from tox.config import DepConfig
+from tox.config import Config, DepConfig
 from tox.reporter import verbosity2
 
 hookimpl = pluggy.HookimplMarker("tox")
@@ -40,7 +40,7 @@ TOOLS = {
         "deps": ["pytest"],
         "requirements": True,
     },
-}
+}  # type: dict
 
 
 def get_config(toxinidir):
@@ -55,6 +55,7 @@ def get_config(toxinidir):
 
 @hookimpl
 def tox_configure(config):
+    # type: (Config) -> None
     # Only run if we're enabled
     toxinidir = str(config.toxinidir)
     cfg = get_config(toxinidir)
@@ -63,22 +64,22 @@ def tox_configure(config):
         return
 
     verbosity2("[wikimedia] tox-wikimedia is enabled")
-    for envname, config in config.envconfigs.items():
-        for factor in config.factors:
+    for envname, econfig in config.envconfigs.items():
+        for factor in econfig.factors:
             # factors are py35, flake8, pytest, etc.
             try:
-                fconfig = TOOLS[factor]
+                fconfig = TOOLS[factor]  # type: dict
             except KeyError:
                 continue
 
             for dep in fconfig["deps"]:
                 # Check to make sure the dep is not already
                 # specific (e.g. to specify a constraint)
-                for cdep in config.deps:
+                for cdep in econfig.deps:
                     if dep in cdep.name:
                         break
                 else:
-                    config.deps.append(DepConfig(dep))
+                    econfig.deps.append(DepConfig(dep))
                     verbosity2(
                         "[wikimedia] {}: Adding dep on {}".format(envname, dep)
                     )
@@ -93,14 +94,14 @@ def tox_configure(config):
                                 envname, txtdep
                             )
                         )
-                        config.deps.append(DepConfig("-r{}".format(txtdep)))
-            if config.commands:
+                        econfig.deps.append(DepConfig("-r{}".format(txtdep)))
+            if econfig.commands:
                 verbosity2(
                     "[wikimedia] {}: overridden commands: {}".format(
-                        envname, repr(config.commands)
+                        envname, repr(econfig.commands)
                     )
                 )
-            if not config.commands:
+            if not econfig.commands:
                 # If there's no command, then set one
                 cmd = []
                 for part in fconfig["commands"]:
@@ -108,7 +109,7 @@ def tox_configure(config):
                         # Needs formatting
                         part = part.format(**cfg["wikimedia"])
                     cmd.append(part)
-                config.commands.append(cmd)
+                econfig.commands.append(cmd)
                 verbosity2(
                     "[wikimedia] {}: Setting command to {}".format(
                         envname, str(cmd)
