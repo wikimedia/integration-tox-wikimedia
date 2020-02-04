@@ -1,5 +1,5 @@
 """
-Copyright (C) 2019 Kunal Mehta <legoktm@member.fsf.org>
+Copyright (C) 2019-2020 Kunal Mehta <legoktm@member.fsf.org>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,6 +34,27 @@ def test_run(initproj, cmd):
     assert "py-flake8 run-test: commands[0] | flake8" in output
     assert "py-pytest installdeps: pytest" in output
     assert "py-pytest run-test: commands[0] | pytest" in output
+
+
+def test_parameterization(initproj, cmd):
+    initproj(
+        "pkg123-0.7",
+        filedefs={
+            "tox.ini": """
+                [tox]
+                envlist = py3-{mypy}
+                requires = tox-wikimedia
+
+                [wikimedia]
+                mypy_package = foobar
+            """
+        },
+    )
+    result = cmd()
+    output = result.output()
+    print(output)
+    assert "py3-mypy installdeps: mypy" in output
+    assert "py3-mypy run-test: commands[0] | mypy foobar\n" in output
 
 
 def test_disabled_run(initproj, cmd):

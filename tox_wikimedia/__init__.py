@@ -1,5 +1,5 @@
 """
-Copyright (C) 2019 Kunal Mehta <legoktm@member.fsf.org>
+Copyright (C) 2019-2020 Kunal Mehta <legoktm@member.fsf.org>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,6 +30,11 @@ hookimpl = pluggy.HookimplMarker("tox")
 # Pre-configured tools
 TOOLS = {
     "flake8": {"commands": ["flake8"], "deps": ["flake8"]},
+    "mypy": {
+        "commands": ["mypy", "{mypy_package}"],
+        "deps": ["mypy"],
+        "requirements": True,
+    },
     "pytest": {
         "commands": ["pytest"],
         "deps": ["pytest"],
@@ -38,20 +43,22 @@ TOOLS = {
 }
 
 
-def is_enabled(toxinidir):
+def get_config(toxinidir):
+    # type: (str) -> ConfigParser
     # TODO: is there a tox API to read this?
     toxini = os.path.join(toxinidir, "tox.ini")
     assert os.path.exists(toxini)
     config = ConfigParser()
     config.read(toxini)
-    return "wikimedia" in config
+    return config
 
 
 @hookimpl
 def tox_configure(config):
     # Only run if we're enabled
     toxinidir = str(config.toxinidir)
-    if not is_enabled(toxinidir):
+    cfg = get_config(toxinidir)
+    if "wikimedia" not in cfg:
         verbosity2("[wikimedia] tox-wikimedia is not enabled, skipping")
         return
 
@@ -87,11 +94,23 @@ def tox_configure(config):
                             )
                         )
                         config.deps.append(DepConfig("-r{}".format(txtdep)))
+            if config.commands:
+                verbosity2(
+                    "[wikimedia] {}: overridden commands: {}".format(
+                        envname, repr(config.commands)
+                    )
+                )
             if not config.commands:
                 # If there's no command, then set one
-                config.commands.append(fconfig["commands"])
+                cmd = []
+                for part in fconfig["commands"]:
+                    if "{" in part:
+                        # Needs formatting
+                        part = part.format(**cfg["wikimedia"])
+                    cmd.append(part)
+                config.commands.append(cmd)
                 verbosity2(
                     "[wikimedia] {}: Setting command to {}".format(
-                        envname, str(fconfig["commands"])
+                        envname, str(cmd)
                     )
                 )
