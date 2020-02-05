@@ -27,7 +27,15 @@ from tox.reporter import verbosity2
 hookimpl = pluggy.HookimplMarker("tox")
 
 
-# Pre-configured tools
+"""
+Pre-configured tools
+
+description: Output when `tox -av` is used
+commands: Commands to run, can be parameterized by using {} which get formatted
+          with the contents of the [wikimedia] section in tox.ini
+deps: Packages that need installation
+requirements: Install deps from requirements.txt and similarly named variants
+"""
 TOOLS = {
     "flake8": {
         "description": "Style consistency checker",
