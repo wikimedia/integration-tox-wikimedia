@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="tox-wikimedia",
-    version="0.0.2",
+    version="0.0.3",
     author="Kunal Mehta",
     author_email="legoktm@member.fsf.org",
     description="Automatically configure tox environments to use "
