@@ -15,10 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser  # type: ignore
+from configparser import ConfigParser
 import pluggy
 import os
 from tox.config import Config, DepConfig
@@ -36,7 +33,7 @@ commands: Commands to run, can be parameterized by using {} which get formatted
 deps: Packages that need installation
 requirements: Install deps from requirements.txt and similarly named variants
 """
-TOOLS = {
+TOOLS: dict = {
     "flake8": {
         "description": "Style consistency checker",
         "commands": ["flake8"],
@@ -54,11 +51,10 @@ TOOLS = {
         "deps": ["pytest"],
         "requirements": True,
     },
-}  # type: dict
+}
 
 
-def get_config(toxinidir):
-    # type: (str) -> ConfigParser
+def get_config(toxinidir: str) -> ConfigParser:
     # TODO: is there a tox API to read this?
     toxini = os.path.join(toxinidir, "tox.ini")
     assert os.path.exists(toxini)
@@ -68,8 +64,7 @@ def get_config(toxinidir):
 
 
 @hookimpl
-def tox_configure(config):
-    # type: (Config) -> None
+def tox_configure(config: Config) -> None:
     # Only run if we're enabled
     toxinidir = str(config.toxinidir)
     cfg = get_config(toxinidir)
@@ -82,7 +77,7 @@ def tox_configure(config):
         for factor in econfig.factors:
             # factors are py35, flake8, pytest, etc.
             try:
-                fconfig = TOOLS[factor]  # type: dict
+                fconfig: dict = TOOLS[factor]
             except KeyError:
                 continue
 
@@ -95,7 +90,7 @@ def tox_configure(config):
                 else:
                     econfig.deps.append(DepConfig(dep))
                     verbosity2(
-                        "[wikimedia] {}: Adding dep on {}".format(envname, dep)
+                        f"[wikimedia] {envname}: Adding dep on {dep}"
                     )
             if fconfig.get("requirements"):
                 for txtdep in [
@@ -108,7 +103,7 @@ def tox_configure(config):
                                 envname, txtdep
                             )
                         )
-                        econfig.deps.append(DepConfig("-r{}".format(txtdep)))
+                        econfig.deps.append(DepConfig(f"-r{txtdep}"))
             if econfig.commands:
                 verbosity2(
                     "[wikimedia] {}: overridden commands: {}".format(
