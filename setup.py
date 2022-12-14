@@ -4,7 +4,7 @@ setup(
     name="tox-wikimedia",
     version="0.0.3",
     author="Kunal Mehta",
-    author_email="legoktm@member.fsf.org",
+    author_email="legoktm@debian.org",
     description="Automatically configure tox environments to use "
                 "Wikimedia's standard tools",
     long_description=open("README.rst").read(),
