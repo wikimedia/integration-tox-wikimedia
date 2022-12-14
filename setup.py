@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="tox-wikimedia",
-    version="0.0.3",
+    version="0.0.4",
     author="Kunal Mehta",
     author_email="legoktm@debian.org",
     description="Automatically configure tox environments to use "
